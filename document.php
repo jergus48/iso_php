@@ -102,7 +102,7 @@ if(isset($_GET['id'])) {
         // Fetch and display the tbiso_doc records in the table
         while ($tbiso_doc_file = mysqli_fetch_assoc($result_tbiso_doc)) {
 ?>
-        <tr onclick="openFile('/<?php echo $tbiso_doc_file['filepath']; ?>/')">
+        <tr onclick="openFile('/<?php echo $tbiso_doc_file['filepath']; ?>')">
         
        
             <td><?php echo $tbiso_doc_file['filename']; ?></td>

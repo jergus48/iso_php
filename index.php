@@ -41,8 +41,8 @@ if (mysqli_num_rows($result) > 0) {
     <table class="table table-dark mb-0 zamestnanci" id="isoDocTable" >
         <thead style="background-color: #393939;">
             <tr>
-                <th scope="col">ID Pracovníka</th>
-                <th scope="col">Meno Pracovníka</th>
+                <!-- <th scope="col">ID Pracovníka</th> -->
+                <th scope="col" style="text-align: center;">Meno Pracovníka</th>
             
             </tr>
         </thead>
@@ -52,8 +52,8 @@ if (mysqli_num_rows($result) > 0) {
     
    
             <tr onclick="window.location='/login.php/?user=<?php echo $row["empid"]; ?>'" >
-                <td><?php echo $row["empid"]; ?></td>
-                <td><?php echo $row["empname"]; ?></td>
+                <!-- <td><?php echo $row["empid"]; ?></td> -->
+                <td style="text-align: center;"><?php echo $row["empname"]; ?></td>
                 
             </tr>
     

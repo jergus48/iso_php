@@ -1,7 +1,6 @@
 <?php
-
-$dbhost="localhost:3307";
-$dbuser="root";
+$dbhost="localhost:5000";
+$dbuser="Jergus Snahnican";
 $dbpassword="2ie3-.9L9FwNX5j";
 $dbname="iso";
 
@@ -10,3 +9,12 @@ if (!$con = mysqli_connect($dbhost,$dbuser,$dbpassword,$dbname)) {
 }
 
 date_default_timezone_set('Europe/Bratislava');
+
+
+
+
+
+// $dbhost="localhost:3307";
+// $dbuser="root";
+// $dbpassword="2ie3-.9L9FwNX5j";
+// $dbname="iso";
