@@ -1,17 +1,20 @@
 <?php
 include("database.php");
-if (!$con) {
-    die("failed to connect database");
-}
+
+
+$db = new Database();
+
 
 $isodocerkid = $_POST['isodocerkid'];
 
 
 $query = "UPDATE tbiso_doc_erk SET dateink = NOW() WHERE isodocerkid = ?";
-$stmt = mysqli_prepare($con, $query);
-mysqli_stmt_bind_param($stmt, "i", $isodocerkid);
-mysqli_stmt_execute($stmt);
-mysqli_stmt_close($stmt);
+$stmt = $db->prepare( $query);
+$stmt->bind_param( "i", $isodocerkid);
+$stmt->execute();
 
-mysqli_close($con);
+
+$stmt->close();
+$db->close();
+
 ?>

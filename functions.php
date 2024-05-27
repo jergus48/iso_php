@@ -1,5 +1,5 @@
 <?php 
-
+//document
 function get_name($isodocid, $con){
     $query_tbiso_doc = "SELECT isodocname FROM tbiso_doc WHERE isodocid = ?";
     $stmt_tbiso_doc_name = mysqli_prepare($con, $query_tbiso_doc);
@@ -16,7 +16,7 @@ function get_name($isodocid, $con){
     // Return the fetched result
     return $isodocname;
 }
-
+//document
 function get_tbiso_doc_file_variables($isodocid,$con) {
 
     $query_tbiso_doc_file = "SELECT * FROM tbiso_doc_file WHERE isodocid = ?";
@@ -27,6 +27,7 @@ function get_tbiso_doc_file_variables($isodocid,$con) {
     mysqli_stmt_close($stmt_tbiso_doc);
     return $result_tbiso_doc;
 }
+//docs
 function get_tbisodocerk_variables($empid,$con){
     $query = "SELECT isodocerkid, isodocid, dateink FROM tbiso_doc_erk WHERE empid = ?";
     $stmt = mysqli_prepare($con, $query);
@@ -51,6 +52,7 @@ function get_tbisodocerk_variables($empid,$con){
 
     return $results;
 }
+//docs
 function get_tbisodoc_variables($isodocid,$con){
     $query_tbiso_doc = "SELECT * FROM tbiso_doc WHERE isodocid = ?";
     $stmt_tbiso_doc = mysqli_prepare($con, $query_tbiso_doc);
@@ -60,6 +62,7 @@ function get_tbisodoc_variables($isodocid,$con){
     mysqli_stmt_close($stmt_tbiso_doc);
     return $result_tbiso_doc;
 }
+//docs, document
 function get_username($empid,$con){
 
     $query = "SELECT empname, pin FROM tbemp WHERE empid = ?";

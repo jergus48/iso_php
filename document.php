@@ -1,157 +1,107 @@
 <?php
-include("database.php");
-include("functions.php");
-session_start();
+include_once ("classes.php");
 
-if (!$con) {
-    die("failed to connect database");
-}
+class Document{
+    public $db;
+    private $session;
+    private $empid;
+    public $username;
 
-if (!isset($_SESSION['empid'])) {
-    header("Location:/");
-    die;
-}
-else {
-    $empid = $_SESSION['empid'];
-    $username=get_username($empid,$con);
-}
+    public $documentData;
 
-
-$isodocerkid = null; 
-$dateink_value = null; 
-if(isset($_GET['id'])) {
-    // Get the empid from the URL
-    $isodocerkid = $_GET['id'];
-    $query = "SELECT empid, isodocid, dateink FROM tbiso_doc_erk WHERE isodocerkid = ?";
-    $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_bind_param($stmt, "i", $isodocerkid);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_bind_result($stmt, $empid, $isodocid, $dateink);
-    $results = array();
-    if (mysqli_stmt_fetch($stmt)) {
-        $dateink_value=$dateink;
+    public function __construct() {
+        $this->db = new Database();
+        $this->session = new SessionManager();
+        $this->empid = $this->getEmpid();
+        $this->username = $this->get_username($this->empid);
+        $this->documentData = $this->prepareData();
     }
-    mysqli_stmt_close($stmt);
 
-    $isodocname=get_name($isodocid,$con);
-    
+    public function run() {
+        $this->renderForm();
+    }
 
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $isodocname; ?></title>
-    <link rel="icon" type="image/png" href="/static/assets/icon.png">
-    <link rel="shortcut icon" href="/static/assets/icon.png">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-    <style>
-        table tr:last-child td:first-child {
-
-            border-bottom-left-radius: 0px;
-        }
-
-        table tr:last-child td:last-child {
-
-            border-bottom-right-radius: 0px;
-        }
-    </style>
-</head>
-<body>
-    
-
-<br>
-<div class="navbar" style="width: 40%">
-        
-        
-        
-    
-        
-       
-        <a style="padding-left: 20px;padding-right:20px;cursor:pointer;" onclick="history.back(); return false;"  >&#8592; Späť na zoznam</a>
-
-        <?php if($dateink_value == null){?>
-        <div style="padding-left: 20px; padding-right:20px;">
-            <button  onclick="Agree()" class="button-72">Potvrdiť oboznámenie</button>
-        </div>
-        <?php } ?>
-        <b style="padding-right: 20px;padding-left: 20px;"><?php echo $username; ?></b>
-    </div>
-<br>
-
-<h2 style="text-align:center;"><?php echo $isodocname; ?></h2>
-
-<table class="table table-dark mb-0" id="isoDocTable" style="width: 50%;">
-                    <thead style="background-color: #393939;">
-                      <tr class="text-uppercase text-success">
+    private function prepareData() {
+        if (isset($_GET['id'])) {
+            $isodocerkid = $_GET['id'];
+            $query = "SELECT empid, isodocid, dateink FROM tbiso_doc_erk WHERE isodocerkid = ?";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param("i", $isodocerkid);
+            $stmt->execute();
+            $stmt->bind_result($empid, $isodocid, $dateink);
+            $stmt->fetch();
+            $stmt->close();
           
-          
-         
-            <th>Dokument</th>
-         
-            
-        </tr>
-        </thead>
-        <tbody>
-<?php
-    
-        
-        $result_tbiso_doc=get_tbiso_doc_file_variables($isodocid,$con);
-        // Fetch and display the tbiso_doc records in the table
-        while ($tbiso_doc_file = mysqli_fetch_assoc($result_tbiso_doc)) {
-?>
-        <tr onclick="openFile('/<?php echo $tbiso_doc_file['filepath']; ?>')">
-        
-       
-            <td><?php echo $tbiso_doc_file['filename']; ?></td>
-            
-        </tr>
-        
 
-<?php
+            $documentData = array(
+                'isodocerkid' => $isodocerkid,
+                'isodocid' => $isodocid,
+                'dateink' => $dateink,
+                'empid' => $this->empid,
+                'files_tbiso_doc' => $this->get_tbiso_doc_file_variables($isodocid)
+            );
+
+            return $documentData;
         }
-        
+        return null;
+    }
 
-?>
-    </tbody>
-    </table>
-<?php
-    // Close the connection
-   
-} else {
-    echo "No user provided in the URL.";
-}
-?>
-</body>
+    public function get_tbiso_doc_file_variables($isodocid) {
+        $query_tbiso_doc_file = "SELECT * FROM tbiso_doc_file WHERE isodocid = ?";
+        $stmt_tbiso_doc = $this->db->prepare($query_tbiso_doc_file);
+        $stmt_tbiso_doc->bind_param("i", $isodocid);
+        $stmt_tbiso_doc->execute();
+        $result_tbiso_doc = $stmt_tbiso_doc->get_result();
+        $files = [];
+        while ($row = $result_tbiso_doc->fetch_assoc()) {
+            $files[] = $row;
+        }
+        $stmt_tbiso_doc->close();
+        return $files;
+    }
 
+    private function renderForm() {
+        $name = $this->username;
+        $isodocname = $this->get_tbiso_doc_name();
+        include('template/document.php');
+    }
 
+    private function get_username() {
+        $query = "SELECT empname FROM tbemp WHERE empid = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $this->empid);
+        $stmt->execute();
+        $stmt->bind_result($empname);
+        $stmt->fetch();
+        $name = $empname;
+        $stmt->close();
+        return $name;
+    }
 
+    private function getEmpid() {
+        if ($this->session->get('empid')) {
+            return $this->session->get('empid');
+        } else {
+            $this->session->redirect('/');
+        }
+    }
 
+    public function get_tbiso_doc_name() {
+        $isodocid = $this->documentData['isodocid'];
+        $query_tbiso_doc = "SELECT isodocname FROM tbiso_doc WHERE isodocid = ?";
+        $stmt_tbiso_doc_name = $this->db->prepare($query_tbiso_doc);
+        $stmt_tbiso_doc_name->bind_param("i", $isodocid);
+        $stmt_tbiso_doc_name->execute();
+        $stmt_tbiso_doc_name->bind_result($isodocname);
+        $stmt_tbiso_doc_name->fetch();
+        $stmt_tbiso_doc_name->close();
+        return $isodocname;
+    }
 
-
-<script src="/static/js/document.js">
-
-</script>
-<script>
-    function Agree() {
-    if (confirm("Potvrdzujem že som sa oboznámil s dokumentom.")) {
-        var isodocerkid = <?php echo $isodocerkid ?>;
-        console.log(isodocerkid)
-        $.ajax({
-            url: '/update_date.php/',
-            type: 'POST',
-            data: { isodocerkid: isodocerkid },
-            success: function (response) {
-                location.reload();
-            },
-            error: function (xhr, status, error) {
-                console.error(xhr.responseText);
-            }
-        });
+    public function __destruct() {
+        $this->db->close();
     }
 }
-</script>
 
-<?php  mysqli_close($con); ?>
+$view = new Document();
+$view->run();
