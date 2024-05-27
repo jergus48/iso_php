@@ -1,83 +1,53 @@
-<?php 
-//document
-function get_name($isodocid, $con){
-    $query_tbiso_doc = "SELECT isodocname FROM tbiso_doc WHERE isodocid = ?";
-    $stmt_tbiso_doc_name = mysqli_prepare($con, $query_tbiso_doc);
-    mysqli_stmt_bind_param($stmt_tbiso_doc_name, "i", $isodocid);
-    mysqli_stmt_execute($stmt_tbiso_doc_name);
-    mysqli_stmt_bind_result($stmt_tbiso_doc_name, $isodocname);
+<?php
+include ("database.php");
+class User {
+    private $db;
+    public $empid;
+    public $empname;
+    private $pin;
 
-    // Fetch the result
-    mysqli_stmt_fetch($stmt_tbiso_doc_name);
-
-    // Close the statement
-    mysqli_stmt_close($stmt_tbiso_doc_name);
-
-    // Return the fetched result
-    return $isodocname;
-}
-//document
-function get_tbiso_doc_file_variables($isodocid,$con) {
-
-    $query_tbiso_doc_file = "SELECT * FROM tbiso_doc_file WHERE isodocid = ?";
-    $stmt_tbiso_doc = mysqli_prepare($con, $query_tbiso_doc_file);
-    mysqli_stmt_bind_param($stmt_tbiso_doc, "i", $isodocid);
-    mysqli_stmt_execute($stmt_tbiso_doc);
-    $result_tbiso_doc = mysqli_stmt_get_result($stmt_tbiso_doc);
-    mysqli_stmt_close($stmt_tbiso_doc);
-    return $result_tbiso_doc;
-}
-//docs
-function get_tbisodocerk_variables($empid,$con){
-    $query = "SELECT isodocerkid, isodocid, dateink FROM tbiso_doc_erk WHERE empid = ?";
-    $stmt = mysqli_prepare($con, $query);
-
-    // Bind the empid parameter
-    mysqli_stmt_bind_param($stmt, "i", $empid);
-
-    // Execute the query
-    mysqli_stmt_execute($stmt);
-
-    // Bind the result variables
-    mysqli_stmt_bind_result($stmt, $isodocerkid, $isodocid, $dateink);
-
-    // Fetch the results into an array
-    $results = array();
-    while (mysqli_stmt_fetch($stmt)) {
-        $results[] = array('isodocerkid' => $isodocerkid, 'isodocid' => $isodocid, 'dateink' => $dateink);
+    public function __construct(Database $db) {
+        $this->db = $db;
     }
 
-    // Close the statement for tbiso_doc_erk
-    mysqli_stmt_close($stmt);
+    public function loadUserById($empid) {
+        $this->empid = $empid;
+        $query = "SELECT empname, pin FROM tbemp WHERE empid = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $this->empid);
+        $stmt->execute();
+        $stmt->bind_result($this->empname, $this->pin);
 
-    return $results;
-}
-//docs
-function get_tbisodoc_variables($isodocid,$con){
-    $query_tbiso_doc = "SELECT * FROM tbiso_doc WHERE isodocid = ?";
-    $stmt_tbiso_doc = mysqli_prepare($con, $query_tbiso_doc);
-    mysqli_stmt_bind_param($stmt_tbiso_doc, "i", $isodocid);
-    mysqli_stmt_execute($stmt_tbiso_doc);
-    $result_tbiso_doc = mysqli_stmt_get_result($stmt_tbiso_doc);
-    mysqli_stmt_close($stmt_tbiso_doc);
-    return $result_tbiso_doc;
-}
-//docs, document
-function get_username($empid,$con){
+        if ($stmt->fetch()) {
+            return true;
+        } else {
+            return false;
+        }
 
-    $query = "SELECT empname, pin FROM tbemp WHERE empid = ?";
-    $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_bind_param($stmt, "i", $empid); 
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_bind_result($stmt, $empname, $pin);
-    
-
-    if (mysqli_stmt_fetch($stmt)) {
-        $name = $empname;
+        $stmt->close();
     }
-    mysqli_stmt_close($stmt);
-    return $name;
+
+    public function verifyPassword($password) {
+        return $password === $this->pin;
+    }
 }
 
 
-?>
+class SessionManager {
+    public function __construct() {
+        session_start();
+    }
+
+    public function set($key, $value) {
+        $_SESSION[$key] = $value;
+    }
+
+    public function get($key) {
+        return $_SESSION[$key] ?? null;
+    }
+
+    public function redirect($url) {
+        header("Location: $url");
+        exit();
+    }
+}

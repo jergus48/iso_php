@@ -1,6 +1,6 @@
 <?php
 
-include_once ("classes.php");
+include_once (" functions.php");
 class Docs{
     public $db;
     private $session;
