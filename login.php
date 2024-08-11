@@ -34,7 +34,9 @@ class Login{
 
     private function handlePostRequest($empid) {
         $password = $_POST['password'];
-        if ($this->user->verifyPassword($password)) {
+        $md5_hash = md5($password);
+        $uppercase_md5_hash = strtoupper($md5_hash);
+        if ($this->user->verifyPassword($uppercase_md5_hash)) {
             $this->session->set('empid', $empid);
             $this->session->redirect('/docs.php/');
         } else {

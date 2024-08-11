@@ -6,8 +6,8 @@ date_default_timezone_set('Europe/Bratislava');
 class Database {
     private $host = 'localhost:5000';
     private $user = 'Jergus Snahnican';
-    private $pass = '2ie3-.9L9FwNX5j';
-    private $dbname = 'iso';
+    private $pass = 'password';
+    private $dbname = 'database';
     public $conn;
 
     public function __construct() {

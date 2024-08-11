@@ -37,6 +37,6 @@
             <?php } ?>
         </tbody>
     </table>
-    <script src="/static/js/index.js"></script>
+    <script src="/static/js/name.js"></script>
 </body>
 </html>

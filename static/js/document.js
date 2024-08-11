@@ -1,7 +1,8 @@
 
 
 function openFile(filePath) {
-    window.open(filePath, "_blank");
+    console.log(filePath);
+    window.open('/subory'+filePath, "_blank");
 }
 
 

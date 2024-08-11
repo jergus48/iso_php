@@ -7,7 +7,7 @@ function searchNames() {
 
     // Loop through all rows, starting from index 1 to skip the header row
     for (var i = 1; i < rows.length; i++) {
-        var name = rows[i].getElementsByTagName("td")[1].textContent.toLowerCase(); // Get the name from the second cell
+        var name = rows[i].getElementsByTagName("td")[0].textContent.toLowerCase(); // Get the name from the second cell
 
         // Remove diacritics and convert to lowercase
         name = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");

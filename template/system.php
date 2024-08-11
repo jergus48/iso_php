@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="/static/assets/icon.png">
     <link rel="shortcut icon" href="/static/assets/icon.png">
     <title>
-       Login
+    Dochádzkový Systém
     </title>
     
 
@@ -32,7 +32,7 @@
                     <form method="post" class="card-body p-4" id="taskForm">
 
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="h2 mb-0" style="color:white;"><?php echo $name ?></span>
+                            <span class="h2 mb-0" style="color:white;">Priložte kartu/čip k čitačke</span>
                            
                            
                         </div>
@@ -41,11 +41,11 @@
                         </p>
 
                         <div class="list-group rounded-0">
-                        <label for="exampleInputPassword1" class="form-label" style="color:white;">Heslo</label>
+                        <label for="exampleInputPassword1" class="form-label" style="color:white;">Kod</label>
                             <div class="input-group mb-3">
                                 
-                                <input type="password" class="form-control" id="numberInput" name="password" style="border-color: none;box-shadow: none;"
-                                    placeholder="Zadajte heslo"  required> 
+                                <input type="password" class="form-control" id="codeInput" name="code" style="border-color: none;box-shadow: none;"
+                                    placeholder="Priložte kartu/čip k čitačke"  required> 
                             </div>
                            
                             <button type="submit" class="btn  btn-primary" name="Login"
@@ -67,7 +67,7 @@
         </div>
     </div>
 </section>
-
+<script src="/static/js/system.js">
    
 </script>
 
